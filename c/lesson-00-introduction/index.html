@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>C Course — Lesson 00: Introduction (Interactive Lab)</title>
+  <style>
+    :root{
+      --bg:#0b1020; --text:#e7ecff; --muted:#aab3d6;
+      --accent:#7aa2ff; --accent2:#43d19e; --warn:#ffcc66;
+      --border:rgba(231,236,255,.10); --shadow:0 10px 30px rgba(0,0,0,.35);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:var(--sans); color:var(--text); line-height:1.5;
+      background:
+        radial-gradient(1000px 700px at 20% -20%, rgba(122,162,255,.25), transparent 60%),
+        radial-gradient(900px 600px at 100% 0%, rgba(67,209,158,.18), transparent 60%),
+        var(--bg);
+    }
+    a{color:#cfe0ff}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow);
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:18px;display:flex;flex-direction:column;gap:14px}
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(10px);
+      background: rgba(11,16,32,.72);
+      border-bottom:1px solid rgba(231,236,255,.10);
+    }
+    .topbar-inner{
+      max-width:1100px;margin:0 auto;padding:10px 18px;
+      display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+    }
+    .title{display:flex;flex-direction:column;gap:2px}
+    .title .h1{font-weight:950;font-size:13px;letter-spacing:.2px}
+    .title .sub{color:rgba(170,179,214,.92);font-size:12px}
+    .actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .btn{
+      appearance:none; border:1px solid var(--border); background:rgba(0,0,0,.18);
+      color:var(--text); padding:10px 12px; border-radius:12px; cursor:pointer;
+      font-weight:800; font-size:13px; display:inline-flex; gap:8px; align-items:center;
+      transition:transform .06s ease, background .15s ease, border-color .15s ease;
+      user-select:none;
+    }
+    .btn:hover{background:rgba(255,255,255,.06);border-color:rgba(122,162,255,.35)}
+    .btn:active{transform:translateY(1px)}
+    .btn.good{
+      background:linear-gradient(180deg, rgba(67,209,158,.18), rgba(67,209,158,.08));
+      border-color:rgba(67,209,158,.35);
+    }
+    .btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .pill{
+      padding:6px 10px;border:1px solid var(--border);border-radius:999px;
+      background:rgba(0,0,0,.18);font-size:12px;color:var(--muted);
+      font-family:var(--mono);display:inline-flex;gap:8px;align-items:center;
+    }
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--muted);opacity:.6}
+    .dot.on{background:var(--accent2);opacity:1}
+    .kbd{
+      font-family:var(--mono);font-size:12px;padding:2px 6px;border-radius:8px;
+      border:1px solid var(--border);background:rgba(0,0,0,.18);white-space:nowrap;
+    }
+    .muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns: 1.15fr .85fr;gap:14px;align-items:start}
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr;} }
+    .pad{padding:16px}
+    h2{margin:0 0 10px 0;font-size:18px;letter-spacing:.15px}
+    h3{margin:16px 0 8px 0;font-size:14px;letter-spacing:.15px}
+    p{margin:0 0 12px 0;line-height:1.75;max-width:75ch}
+    .callout{
+      border:1px dashed rgba(122,162,255,.35);
+      border-radius:14px; padding:12px 14px; background:rgba(122,162,255,.07);
+    }
+    .list{margin:10px 0 0 18px;color:rgba(170,179,214,.95);line-height:1.9;max-width:75ch}
+    .map{display:grid;grid-template-columns: 1fr 1fr;gap:10px}
+    @media (max-width: 860px){ .map{grid-template-columns:1fr;} }
+    .tile{
+      border:1px solid rgba(231,236,255,.12);
+      border-radius:14px; background:rgba(0,0,0,.14); padding:12px;
+    }
+    .tile .t{font-weight:900}
+    .tile .d{margin-top:6px;color:rgba(170,179,214,.92);font-size:13px;line-height:1.6}
+    .tile .row{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+    .chk{display:flex;gap:10px;align-items:flex-start}
+    .chk input{margin-top:3px}
+    footer{color:rgba(170,179,214,.72);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:4px 2px}
+
+    /* Mini stepper demo */
+    .demo{
+      background:linear-gradient(180deg, rgba(10,15,30,.92), rgba(10,15,30,.86));
+      border:1px solid var(--border); border-radius:14px; overflow:hidden;
+    }
+    .demo-head{
+      display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+      padding:10px 12px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.18);
+    }
+    .demo-head .label{font-weight:950;font-size:13px;letter-spacing:.2px}
+    .demo-head .hint{margin-left:auto;color:var(--muted);font-size:12px}
+    .code{font-family:var(--mono);font-size:13px;line-height:1.55;padding:10px 0}
+    .line{display:grid;grid-template-columns: 52px 1fr;gap:0;padding:0 12px;white-space:pre}
+    .ln{color:rgba(170,179,214,.75);text-align:right;padding-right:12px;user-select:none}
+    .src{color:var(--text)}
+    .hl{background:rgba(122,162,255,.18);border-left:3px solid rgba(122,162,255,.7);padding-left:9px}
+    .dim .src{color:rgba(231,236,255,.45)}
+    .kw{color:#9bdcff} .fn{color:#ffd27d} .str{color:#a6ffcb} .cm{color:rgba(170,179,214,.55)}
+    .console{
+      background:linear-gradient(180deg, rgba(17,26,51,.75), rgba(17,26,51,.55));
+      border:1px solid var(--border); border-radius:16px; overflow:hidden; margin-top:12px;
+    }
+    .consolehead{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+    .consolehead .label{font-weight:950;font-size:13px}
+    .consolehead .small{margin-left:auto;color:var(--muted);font-size:12px;font-family:var(--mono)}
+    .consolebody{font-family:var(--mono);font-size:13px;padding:10px 12px;min-height:96px;white-space:pre-wrap;color:rgba(231,236,255,.92)}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="title">
+        <div class="h1">C Course — Lesson 00: Introduction (Interactive Lab)</div>
+        <div class="sub">How labs work + a tiny stepper demo.</div>
+      </div>
+      <div class="actions">
+        <span class="pill"><span class="dot on"></span><span>READY</span></span>
+        <button class="btn" id="btnGitBook">📖 Back to GitBook</button>
+        <button class="btn good" id="btnNext">Next: Lesson 01 →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section class="card pad">
+      <h2>How to use this course</h2>
+      <p>Each lesson has two parts: <b>Lesson (GitBook)</b> for reading, then <b>Practice Lab (this)</b> for doing.</p>
+      <div class="callout"><b>Simple flow:</b> Read the lesson → Open the lab → Step, run, and solve mini challenges.</div>
+
+      <h3>What makes these labs different?</h3>
+      <ul class="list">
+        <li><b>Stepping:</b> line highlight moves like a debugger.</li>
+        <li><b>Simulated output:</b> <span class="kbd">printf</span> appears in a console panel.</li>
+        <li><b>Visual simulations:</b> compiler stages, memory, pointers — later lessons.</li>
+        <li><b>Mini challenges:</b> short “predict output” and fill-in-the-blank exercises.</li>
+      </ul>
+    </section>
+
+    <div class="grid">
+      <section class="card pad">
+        <h2>Course map (preview)</h2>
+        <p class="muted">A quick peek at what’s coming.</p>
+
+        <div class="map">
+          <div class="tile">
+            <div class="t">Lesson 01 — C Basics</div>
+            <div class="d">What C is, what compiling means, and the basic shape of a C program.</div>
+            <div class="row"><span class="pill">main()</span><span class="pill">#include</span><span class="pill">printf</span></div>
+          </div>
+          <div class="tile">
+            <div class="t">Variables & Types</div>
+            <div class="d">Store information: numbers, characters, and simple rules about types.</div>
+            <div class="row"><span class="pill">int</span><span class="pill">char</span><span class="pill">float</span></div>
+          </div>
+          <div class="tile">
+            <div class="t">If / Loops</div>
+            <div class="d">Make decisions and repeat actions.</div>
+            <div class="row"><span class="pill">if</span><span class="pill">for</span><span class="pill">while</span></div>
+          </div>
+          <div class="tile">
+            <div class="t">Arrays → Pointers (later)</div>
+            <div class="d">Arrays store many items. Pointers help you understand memory.</div>
+            <div class="row"><span class="pill">[]</span><span class="pill">*</span><span class="pill">&amp;</span></div>
+          </div>
+        </div>
+
+        <h3>Quick checkpoint</h3>
+        <div class="chk"><input id="chk1" type="checkbox" /><label for="chk1">I understand the flow: <b>GitBook</b> → <b>Lab</b>.</label></div>
+        <div class="chk" style="margin-top:10px"><input id="chk2" type="checkbox" /><label for="chk2">I know I can use <span class="kbd">Step</span> and <span class="kbd">Run</span> to learn slowly.</label></div>
+
+        <div class="callout" style="margin-top:12px">
+          <b>Tip:</b> If your course links aren’t set yet, edit the <span class="kbd">LINKS</span> object in the script at the bottom.
+        </div>
+      </section>
+
+      <section class="card pad">
+        <h2>Try a tiny stepper demo</h2>
+        <p class="muted">This is just a preview so you know what “interactive” means.</p>
+
+        <div class="demo">
+          <div class="demo-head">
+            <div class="label">Mini Program</div>
+            <div class="hint">Shortcuts: <span class="kbd">S</span> step • <span class="kbd">R</span> run • <span class="kbd">X</span> reset</div>
+          </div>
+          <div id="code" class="code"></div>
+        </div>
+
+        <div class="console">
+          <div class="consolehead"><div class="label">Simulated Console</div><div class="small">stdout</div></div>
+          <div id="console" class="consolebody">(console is empty)</div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+          <button id="btnStep" class="btn primary">▶ Step</button>
+          <button id="btnRun" class="btn good">⏩ Run</button>
+          <button id="btnReset" class="btn">↺ Reset</button>
+          <span class="pill">ln <span id="lnNow">—</span></span>
+        </div>
+
+        <div class="callout" style="margin-top:12px">
+          <b>What you’re seeing:</b> A learning simulation. In real life, C is compiled first, then executed.
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <div>Target path: <span class="kbd">c/lesson-00-introduction/index.html</span></div>
+      <div>Model: GPT-5.2 Thinking</div>
+    </footer>
+  </div>
+
+  <script>
+    // Update these when you have your public GitBook + Lesson 01 lab URL.
+    const LINKS = {
+      gitbookLesson00: "", // e.g. "https://YOUR-GITBOOK/.../lesson-00-introduction"
+      lesson01Lab: ""      // e.g. "https://dctechster.github.io/interactive-labs/c/lesson-01-c-basics/"
+    };
+
+    function openMaybe(url){
+      if (!url){
+        alert("Link not set yet.\n\nEdit the LINKS object in the script.");
+        return;
+      }
+      window.open(url, "_blank", "noopener");
+    }
+    document.getElementById('btnGitBook').addEventListener('click', () => openMaybe(LINKS.gitbookLesson00));
+    document.getElementById('btnNext').addEventListener('click', () => openMaybe(LINKS.lesson01Lab));
+
+    // Mini stepper
+    const program = [
+      { ln: 1, text: '#include <stdio.h>', kind: 'pre' },
+      { ln: 2, text: '', kind: 'blank' },
+      { ln: 3, text: 'int main(void) {', kind: 'enter' },
+      { ln: 4, text: '  printf("Welcome to C!\\n");', kind: 'printf', value: "Welcome to C!\n" },
+      { ln: 5, text: '  return 0;', kind: 'return', value: 0 },
+      { ln: 6, text: '}', kind: 'exit' }
+    ];
+
+    const elCode = document.getElementById('code');
+    const elConsole = document.getElementById('console');
+    const elLnNow = document.getElementById('lnNow');
+
+    function syntaxHighlight(line) {
+      let s = line.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      s = s.replace(/"([^"\\]|\\.)*"/g, (m)=>`<span class="str">${m}</span>`);
+      s = s.replace(/\b(int|return|void)\b/g, `<span class="kw">$1</span>`);
+      s = s.replace(/\b(printf|main)\b/g, `<span class="fn">$1</span>`);
+      s = s.replace(/^#include\b/, `<span class="kw">#include</span>`);
+      return s;
+    }
+
+    function renderCode(currentIndex = -1) {
+      elCode.innerHTML = '';
+      program.forEach((line, idx) => {
+        const div = document.createElement('div');
+        div.className = 'line' + (idx === currentIndex ? ' hl' : '') + (line.kind === 'blank' ? ' dim' : '');
+        const ln = document.createElement('div');
+        ln.className = 'ln';
+        ln.textContent = line.ln;
+        const src = document.createElement('div');
+        src.className = 'src';
+        src.innerHTML = syntaxHighlight(line.text || '');
+        div.appendChild(ln); div.appendChild(src);
+        elCode.appendChild(div);
+      });
+    }
+
+    function clearConsole(){ elConsole.textContent = '(console is empty)'; }
+    function appendConsole(t){
+      if (elConsole.textContent === '(console is empty)') elConsole.textContent = '';
+      elConsole.textContent += t;
+    }
+
+    let ip = -1, running = false, timer = null;
+
+    function syncButtons(){
+      const finished = ip >= program.length - 1;
+      document.getElementById('btnStep').disabled = running || finished;
+      document.getElementById('btnRun').disabled  = running || finished;
+    }
+
+    function reset(){
+      ip = -1;
+      running = false;
+      if (timer) clearInterval(timer);
+      timer = null;
+      clearConsole();
+      elLnNow.textContent = '—';
+      renderCode(-1);
+      syncButtons();
+    }
+
+    function step(){
+      if (running) return;
+      if (ip >= program.length - 1) return;
+      ip++;
+      const line = program[ip];
+      elLnNow.textContent = String(line.ln);
+      renderCode(ip);
+      if (line.kind === 'printf') appendConsole(line.value.replace(/\\n/g, "\n"));
+      if (line.kind === 'return') appendConsole(`(program exited with code ${line.value})\n`);
+      if (line.kind === 'exit') appendConsole('(end of main)\n');
+      syncButtons();
+    }
+
+    function run(){
+      if (running) return;
+      running = true;
+      syncButtons();
+      timer = setInterval(() => {
+        if (ip >= program.length - 1){
+          running = false;
+          clearInterval(timer);
+          timer = null;
+          syncButtons();
+          return;
+        }
+        step();
+        if (ip >= program.length - 1){
+          running = false;
+          clearInterval(timer);
+          timer = null;
+          syncButtons();
+        }
+      }, 450);
+    }
+
+    document.getElementById('btnStep').addEventListener('click', step);
+    document.getElementById('btnRun').addEventListener('click', run);
+    document.getElementById('btnReset').addEventListener('click', reset);
+
+    // Shortcuts: only when NOT typing
+    window.addEventListener('keydown', (e) => {
+      const el = document.activeElement;
+      const typing = el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
+      if (typing) return;
+
+      const k = e.key.toLowerCase();
+      if (k === 's') { e.preventDefault(); if (!document.getElementById('btnStep').disabled) step(); }
+      if (k === 'r') { e.preventDefault(); if (!document.getElementById('btnRun').disabled) run(); }
+      if (k === 'x') { e.preventDefault(); reset(); }
+    });
+
+    renderCode(-1);
+    reset();
+  </script>
+</body>
+</html>
